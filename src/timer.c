@@ -94,7 +94,7 @@ static void ls_time_string_format(char* string,
 static void ls_time_string_serialized(char* string,
     long long time)
 {
-    ls_time_string_format(string, NULL, time, 1, 0, 0);
+    sprintf(string, "%lld", time);
 }
 
 void ls_time_string(char* string, long long time)
@@ -239,8 +239,7 @@ int ls_game_create(ls_game** game_ptr, const char* path, char** error_msg)
     // get wr
     ref = json_object_get(json, "world_record");
     if (ref) {
-        game->world_record = ls_time_value(
-            json_string_value(ref));
+        game->world_record = strtoll(json_string_value(ref), NULL, 10);
     }
     // get splits
     ref = json_object_get(json, "splits");
@@ -294,8 +293,7 @@ int ls_game_create(ls_game** game_ptr, const char* path, char** error_msg)
             }
             split_ref = json_object_get(split, "time");
             if (split_ref) {
-                game->split_times[i] = ls_time_value(
-                    json_string_value(split_ref));
+                game->split_times[i] = strtoll(json_string_value(split_ref), NULL, 10);
             }
             if (i && game->split_times[i] && game->split_times[i - 1]) {
                 game->segment_times[i] = game->split_times[i] - game->split_times[i - 1];
@@ -304,15 +302,13 @@ int ls_game_create(ls_game** game_ptr, const char* path, char** error_msg)
             }
             split_ref = json_object_get(split, "best_time");
             if (split_ref) {
-                game->best_splits[i] = ls_time_value(
-                    json_string_value(split_ref));
+                game->best_splits[i] = strtoll(json_string_value(split_ref), NULL, 10);
             } else if (game->split_times[i]) {
                 game->best_splits[i] = game->split_times[i];
             }
             split_ref = json_object_get(split, "best_segment");
             if (split_ref) {
-                game->best_segments[i] = ls_time_value(
-                    json_string_value(split_ref));
+                game->best_segments[i] = strtoll(json_string_value(split_ref), NULL, 10);
             } else if (game->segment_times[i]) {
                 game->best_segments[i] = game->segment_times[i];
             }
@@ -335,22 +331,24 @@ void ls_game_update_splits(ls_game* game,
 {
     if (timer->curr_split) {
         int size;
-        if (timer->split_times[game->split_count - 1]
+        if ((timer->split_times[game->split_count - 1]
             && timer->split_times[game->split_count - 1]
-                < game->world_record) {
+                < game->world_record) || game->world_record == 0) {
             game->world_record = timer->split_times[game->split_count - 1];
         }
         size = timer->curr_split * sizeof(long long);
+
         if (timer->split_times[game->split_count - 1]
-            < game->split_times[game->split_count - 1]) {
+            < game->split_times[game->split_count - 1] || game->split_times[game->split_count -1] == 0) {
             memcpy(game->split_times, timer->split_times, size);
         }
-        memcpy(game->segment_times, timer->segment_times, size);
+        memcpy(game->segment_times, timer->segment_times, size);        
         for (int i = 0; i < game->split_count; ++i) {
-            if (timer->split_times[i] < game->best_splits[i]) {
+            printf("Splits: %d, %lld, %lld\n", i, timer->split_times[i], game->split_times[i]);
+            if (timer->split_times[i] < game->best_splits[i] || game->best_splits[i] == 0) {
                 game->best_splits[i] = timer->split_times[i];
             }
-            if (timer->segment_times[i] < game->best_segments[i]) {
+            if (timer->segment_times[i] < game->best_segments[i] || game->best_segments[i] == 0) {
                 game->best_segments[i] = timer->segment_times[i];
             }
         }
@@ -370,7 +368,7 @@ void ls_game_update_bests(ls_game* game,
 
 int ls_game_save(const ls_game* game)
 {
-    int error = 0;
+    int result = 0;
     char str[256];
     json_t* json = json_object();
     json_t* splits = json_array();
@@ -396,8 +394,7 @@ int ls_game_save(const ls_game* game)
     }
     for (i = 0; i < game->split_count; ++i) {
         json_t* split = json_object();
-        json_object_set_new(split, "title",
-            json_string(game->split_titles[i]));
+        json_object_set_new(split, "title", json_string(game->split_titles[i]));
         ls_time_string_serialized(str, game->split_times[i]);
         json_object_set_new(split, "time", json_string(str));
         ls_time_string_serialized(str, game->best_splits[i]);
@@ -420,12 +417,16 @@ int ls_game_save(const ls_game* game)
     if (game->height) {
         json_object_set_new(json, "height", json_integer(game->height));
     }
-    if (!json_dump_file(json, game->path,
-            JSON_PRESERVE_ORDER | JSON_INDENT(2))) {
-        error = 1;
+
+    result = json_dump_file(json, game->path, JSON_PRESERVE_ORDER | JSON_INDENT(2));
+    if (result != 0) {
+        printf("Error dumping JSON:\n%s\n", json_dumps(json, JSON_PRESERVE_ORDER | JSON_INDENT(2)));
+        printf("Error: '%d'\n", result);
+        printf("Path: %s\n", game->path);
     }
     json_decref(json);
-    return error;
+
+    return result;
 }
 
 void ls_timer_release(ls_timer* timer)
@@ -615,6 +616,7 @@ int ls_timer_start(ls_timer* timer)
 
 int ls_timer_split(ls_timer* timer)
 {
+
     if (timer->running && timer->time > 0) {
         if (timer->curr_split < timer->game->split_count) {
             int i;
