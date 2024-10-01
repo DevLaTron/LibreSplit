@@ -1,3 +1,9 @@
+This is a fork of LibreSplit from [wins1ey/LibreSplit](https://github.com/wins1ey/LibreSplit) which in turn is a fork of [urn](https://github.com/3snowp7im/urn).
+
+Changes from the point of forking will be provided in the [CHANGELOG](CHANGELOG.md)
+
+As this fork is probably going to diverge from the originals quite quickly, merging upstream is probably not viable.
+
 # <img src="libresplit.svg" width=43 align=top> LibreSplit
 
 LibreSplit brings auto splitting functionality to [urn](https://github.com/3snowp7im/urn) with Lua-based auto splitters that are easy to port from asl.
