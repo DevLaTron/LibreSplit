@@ -2,6 +2,8 @@
 libresplit
 obj/
 src/main.h
+.idea/
+build/
 
 .vscode/
 .cache/
