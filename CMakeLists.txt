@@ -53,7 +53,7 @@ install(FILES libresplit.desktop DESTINATION ${CMAKE_INSTALL_PREFIX}/share/appli
 
 # Install the icon for different sizes
 foreach(size 16 22 24 32 36 48 64 72 96 128 256 512)
-    install(CODE "execute_process(COMMAND rsvg-convert -w ${size} -h ${size} -f png -o ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/${size}x${size}/apps/libresplit.png libresplit.svg)")
+    install(CODE "execute_process(COMMAND rsvg-convert -w ${size} -h ${size} -f png -o ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/${size}x${size}/apps/libresplit.png ${CMAKE_SOURCE_DIR}/libresplit.svg)")
 endforeach()
 
 # Icon cache update rule (optional)
