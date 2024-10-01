@@ -20,6 +20,9 @@ LibreSplit requires the following dependencies on your system to compile:
 - `x11`
 - `libjansson`
 - `luajit`
+- `librsvg2-bin`
+- `lua5.1`
+- `liblua5.1-0-dev`
 
 ## Installation
 
