@@ -54,7 +54,6 @@ install(FILES libresplit.desktop DESTINATION ${CMAKE_INSTALL_PREFIX}/share/appli
 # Install the icon for different sizes
 foreach(size 16 22 24 32 36 48 64 72 96 128 256 512)
     install(CODE "execute_process(COMMAND rsvg-convert -w ${size} -h ${size} -f png -o ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/${size}x${size}/apps/libresplit.png libresplit.svg)")
-    install(DIRECTORY ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/${size}x${size}/apps DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/${size}x${size}/apps)
 endforeach()
 
 # Icon cache update rule (optional)
@@ -66,15 +65,15 @@ endif()
 install(FILES libresplit.gschema.xml DESTINATION ${CMAKE_INSTALL_PREFIX}/share/glib-2.0/schemas)
 
 # Compile schemas
-if(NOT DESTDIR)
-    install(CODE "execute_process(COMMAND glib-compile-schemas ${CMAKE_INSTALL_PREFIX}/share/glib-2.0/schemas)")
-endif()
+install(CODE "execute_process(COMMAND glib-compile-schemas ${CMAKE_INSTALL_PREFIX}/share/glib-2.0/schemas)")
 
 # Uninstallation target (custom)
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_INSTALL_PREFIX}/bin/libresplit
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_INSTALL_PREFIX}/share/applications/libresplit.desktop
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor
+    foreach(size 16 22 24 32 36 48 64 72 96 128 256 512)
+        COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/${size}x${size}/apps/libresplit.png
+    endforeach()
 )
 
 # Formatting target using clang-format

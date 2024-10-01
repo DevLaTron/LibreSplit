@@ -29,8 +29,10 @@ LibreSplit requires the following dependencies on your system to compile:
 ```bash
 git clone https://github.com/wins1ey/LibreSplit
 cd LibreSplit
+mkdir build
+cd build
+cmake ..
 make
-sudo make install
 ```
 or
 ```bash
