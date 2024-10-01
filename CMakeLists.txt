@@ -30,10 +30,21 @@ file(GLOB COMPONENTS ${COMPONENT_DIR}/*.c)
 # Set the output directory for object files
 set(OBJ_DIR ${CMAKE_BINARY_DIR}/obj)
 
-# Add executable target
-add_executable(libresplit ${SOURCES} ${COMPONENTS})
+# Custom command to generate main.h from main.css using xxd
+add_custom_command(
+    OUTPUT ${SRC_DIR}/main.h
+    COMMAND xxd --include main.css > main.h
+    WORKING_DIRECTORY ${SRC_DIR}
+    DEPENDS ${SRC_DIR}/main.css
+    COMMENT "Generating main.h from main.css"
+    )
+# Add a custom target for main.h
+add_custom_target(generate_main_h DEPENDS ${SRC_DIR}/main.h)
 
-# Link the necessary libraries
+# Add executable target and link the necessary libraries
+add_executable(libresplit ${SOURCES} ${COMPONENTS} ${SRC_DIR}/main.h)
+add_dependencies(libresplit generate_main_h)
+
 target_link_libraries(libresplit ${GTK3_LIBRARIES} ${X11_LIBRARIES} ${JANSSON_LIBRARIES} ${LUAJIT_LIBRARIES})
 
 # Installation rules
@@ -70,3 +81,4 @@ add_custom_target(uninstall
 add_custom_target(format
     COMMAND clang-format -i ${SOURCES} ${COMPONENTS} ${SRC_DIR}/*.h ${COMPONENT_DIR}/*.h
 )
+
