@@ -4,6 +4,7 @@ obj/
 src/main.h
 .idea/
 build/
+cmake/
 
 .vscode/
 .cache/

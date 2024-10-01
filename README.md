@@ -24,7 +24,7 @@ LibreSplit requires the following dependencies on your system to compile:
 - `lua5.1`
 - `liblua5.1-0-dev`
 
-## Installation
+## Building
 
 ```bash
 git clone https://github.com/wins1ey/LibreSplit
@@ -34,14 +34,16 @@ cd build
 cmake ..
 make
 ```
-or
-```bash
-git clone https://github.com/wins1ey/LibreSplit && cd LibreSplit && make && sudo make install
+
+## Installing globally
+
+```
+sudo make install
 ```
 
 ## Getting Started
 
-1. Launch LibreSplit by executing the compiled binary. `./libresplit`
+1. Launch LibreSplit by executing the compiled binary. `./libresplit` or "libresplit" when installed globally
 2. When first launched, LibreSplit will create the `libresplit` directory in your config directory. Auto splitters, splits and themes go in their respective folders inside.
 3. The initial window is undecorated, but you can toggle window decorations by pressing the right Control key.
 4. Control the timer using the following key presses:
