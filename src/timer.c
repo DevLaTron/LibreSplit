@@ -52,7 +52,6 @@ static void ls_time_string_format(char* string,
     int delta,
     int compact)
 {
-    int hours, minutes, seconds;
     char dot_subsecs[256];
     const char* sign = "";
     if (time < 0) {
@@ -61,9 +60,9 @@ static void ls_time_string_format(char* string,
     } else if (delta) {
         sign = "+";
     }
-    hours = time / (1000000LL * 60 * 60);
-    minutes = (time / (1000000LL * 60)) % 60;
-    seconds = (time / 1000000LL) % 60;
+    int hours = time / (1000000LL * 60 * 60);
+    int minutes = (time / (1000000LL * 60)) % 60;
+    int seconds = (time / 1000000LL) % 60;
     sprintf(dot_subsecs, ".%06lld", time % 1000000LL);
     if (!serialized) {
         /* Show only a dot and 2 decimal places instead of all 6 */
