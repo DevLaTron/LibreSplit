@@ -120,7 +120,6 @@ void ls_delta_string(char* string, long long time)
 
 void ls_game_release(ls_game* game)
 {
-    int i;
     if (game->path) {
         free(game->path);
     }
@@ -134,7 +133,7 @@ void ls_game_release(ls_game* game)
         free(game->theme_variant);
     }
     if (game->split_titles) {
-        for (i = 0; i < game->split_count; ++i) {
+        for (int i = 0; i < game->split_count; ++i) {
             if (game->split_titles[i]) {
                 free(game->split_titles[i]);
             }
@@ -155,16 +154,15 @@ void ls_game_release(ls_game* game)
     }
 }
 
-int ls_game_create(ls_game** game_ptr, const char* path, char** error_msg)
+int ls_game_create(ls_game** game_ptr, const char* path)
 {
-    int error = 0;
-    ls_game* game;
-    int i;
+    enum ERRORCODE error = NONE;
+
     json_t* json = 0;
-    json_t* ref;
     json_error_t json_error;
-    // allocate game
-    game = calloc(1, sizeof(ls_game));
+
+    // Allocate the game structure
+    ls_game* game = calloc(1, sizeof(ls_game));
     if (!game) {
         error = 1;
         goto game_create_done;
@@ -180,27 +178,27 @@ int ls_game_create(ls_game** game_ptr, const char* path, char** error_msg)
     if (!json) {
         error = 1;
         size_t msg_len = snprintf(NULL, 0, "%s (%d:%d)", json_error.text, json_error.line, json_error.column);
-        *error_msg = calloc(msg_len + 1, sizeof(char));
-        sprintf(*error_msg, "%s (%d:%d)", json_error.text, json_error.line, json_error.column);
+        //*error_msg = calloc(msg_len + 1, sizeof(char));
+        //sprintf(*error_msg, "%s (%d:%d)", json_error.text, json_error.line, json_error.column);
         goto game_create_done;
     }
 
     // Detect generic format from splits.io
-    ref = json_object_get(json, "_schemaVersion");
+    const json_t* ref = json_object_get(json, "_schemaVersion");
 
     if(ref) {
         printf("Detected generic format: %s\n", strdup(json_string_value(ref)));
-        if(!ff_load_splitsio_game(game, json, error_msg)) {
+        if(!ff_load_splitsio_game(game, json)) {
             error = 1;
         };
     } else {
-        if(!ff_load_urn_game(game, json, error_msg)) {
+        if(!ff_load_urn_game(game, json)) {
             error = 1;
         };
     }
 
 game_create_done:
-    if (!error) {
+    if (error != NONE) {
         *game_ptr = game;
     } else if (game) {
         ls_game_release(game);

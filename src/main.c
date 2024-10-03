@@ -13,6 +13,8 @@
 #include "bind.h"
 #include "component/components.h"
 #include "main.h"
+
+#include "errors.h"
 #include "settings.h"
 #include "timer.h"
 
@@ -676,7 +678,7 @@ static void ls_app_window_open(LSAppWindow* win, const char* file)
         ls_game_release(win->game);
         win->game = 0;
     }
-    if (ls_game_create(&win->game, file, &error_msg)) {
+    if (ls_game_create(&win->game, file) == NONE) {
         win->game = 0;
         if (error_msg) {
             error_popup = gtk_message_dialog_new(

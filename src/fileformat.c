@@ -2,16 +2,18 @@
 #include <stdbool.h>
 #include <string.h>
 
-bool ff_load_splitsio_game(ls_game* game, json_t* json, char** error_msg)
-{
-    return true;
-}
-
-bool ff_load_urn_game(ls_game* game, json_t* json, char** error_msg)
+enum ERRORCODE ff_load_splitsio_game(ls_game* game, json_t* json)
 {
     json_t* ref;
-    
-    ref = json_object_get(json, "title");
+
+    return NONE;
+}
+
+enum ERRORCODE ff_load_urn_game(ls_game* game, json_t* json)
+{
+
+    const json_t* ref = json_object_get(json, "title");
+
     if (ref) {
         game->title = strdup(json_string_value(ref));
         if (!game->title) {
@@ -133,5 +135,5 @@ bool ff_load_urn_game(ls_game* game, json_t* json, char** error_msg)
         }
     }
 
-    return true;
+    return NONE;
 }

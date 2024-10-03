@@ -1,9 +1,9 @@
 # Set the minimum required CMake version and the project name
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.28)
 project(libresplit C)
 
 # Set the C standard and other compiler flags
-set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -pthread -Wall -Wno-unused-parameter")
 
 # Find the required packages
@@ -42,9 +42,7 @@ add_custom_command(
 add_custom_target(generate_main_h DEPENDS ${SRC_DIR}/main.h)
 
 # Add executable target and link the necessary libraries
-add_executable(libresplit ${SOURCES} ${COMPONENTS} ${SRC_DIR}/main.h
-        src/fileformat.c
-        src/fileformat.h)
+add_executable(libresplit ${SOURCES} ${COMPONENTS} ${SRC_DIR}/main.h)
 add_dependencies(libresplit generate_main_h)
 
 target_link_libraries(libresplit ${GTK3_LIBRARIES} ${X11_LIBRARIES} ${JANSSON_LIBRARIES} ${LUAJIT_LIBRARIES})
