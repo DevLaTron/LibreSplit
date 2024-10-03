@@ -42,7 +42,9 @@ add_custom_command(
 add_custom_target(generate_main_h DEPENDS ${SRC_DIR}/main.h)
 
 # Add executable target and link the necessary libraries
-add_executable(libresplit ${SOURCES} ${COMPONENTS} ${SRC_DIR}/main.h)
+add_executable(libresplit ${SOURCES} ${COMPONENTS} ${SRC_DIR}/main.h
+        src/fileformat.c
+        src/fileformat.h)
 add_dependencies(libresplit generate_main_h)
 
 target_link_libraries(libresplit ${GTK3_LIBRARIES} ${X11_LIBRARIES} ${JANSSON_LIBRARIES} ${LUAJIT_LIBRARIES})
