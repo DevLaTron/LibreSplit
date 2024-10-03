@@ -1,5 +1,5 @@
 # Set the minimum required CMake version and the project name
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.28 FATAL_ERROR)
 project(libresplit C)
 
 # Set the C standard and other compiler flags
@@ -81,3 +81,6 @@ add_custom_target(format
     COMMAND clang-format -i ${SOURCES} ${COMPONENTS} ${SRC_DIR}/*.h ${COMPONENT_DIR}/*.h
 )
 
+
+enable_testing()
+add_subdirectory(tests)

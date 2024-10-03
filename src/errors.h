@@ -1,7 +1,3 @@
-//
-// Created by geiger on 03.10.24.
-//
-
 #ifndef ERRORS_H
 #define ERRORS_H
 
