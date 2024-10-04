@@ -17,7 +17,7 @@ enum ERRORCODE ff_load_urn_game(ls_game* game, json_t* json)
     if (ref) {
         game->title = strdup(json_string_value(ref));
         if (!game->title) {
-            return false;
+            return JSON_NO_TITLE;
         }
     }
     // copy theme
@@ -25,7 +25,7 @@ enum ERRORCODE ff_load_urn_game(ls_game* game, json_t* json)
     if (ref) {
         game->theme = strdup(json_string_value(ref));
         if (!game->theme) {
-            return false;
+            return JSON_NO_THEME;
         }
     }
     // copy theme variant

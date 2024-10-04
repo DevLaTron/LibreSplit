@@ -666,7 +666,6 @@ static LSAppWindow* ls_app_window_new(LSApp* app)
 
 static void ls_app_window_open(LSAppWindow* win, const char* file)
 {
-    char* error_msg = NULL;
     GtkWidget* error_popup;
 
     if (win->timer) {
@@ -674,30 +673,34 @@ static void ls_app_window_open(LSAppWindow* win, const char* file)
         ls_timer_release(win->timer);
         win->timer = 0;
     }
+
     if (win->game) {
         ls_game_release(win->game);
         win->game = 0;
     }
-    if (ls_game_create(&win->game, file) == NONE) {
+
+    enum ERRORCODE errorcode;
+    errorcode = ls_game_create(&win->game, file);
+
+    if(errorcode == NONE) {
+         errorcode = ls_timer_create(&win->timer, win->game);
+    }
+
+    if (errorcode == NONE) {
+        ls_app_window_show_game(win);
+    } else {
         win->game = 0;
-        if (error_msg) {
-            error_popup = gtk_message_dialog_new(
+        win->timer = 0;
+        error_popup = gtk_message_dialog_new(
                 GTK_WINDOW(win),
                 GTK_DIALOG_DESTROY_WITH_PARENT,
                 GTK_MESSAGE_INFO,
                 GTK_BUTTONS_OK,
-                "JSON parse error: %s\n%s",
-                error_msg,
+                "Error Code: %s\n%s",
+                ERRORCODE_STRING[errorcode],
                 file);
             gtk_dialog_run(GTK_DIALOG(error_popup));
-
-            free(error_msg);
             gtk_widget_destroy(error_popup);
-        }
-    } else if (ls_timer_create(&win->timer, win->game)) {
-        win->timer = 0;
-    } else {
-        ls_app_window_show_game(win);
     }
 }
 

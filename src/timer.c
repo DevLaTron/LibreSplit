@@ -155,7 +155,7 @@ void ls_game_release(ls_game* game)
 
 int ls_game_create(ls_game** game_ptr, const char* path)
 {
-    enum ERRORCODE error = NONE;
+    enum ERRORCODE error;
 
     json_t* json = 0;
     json_error_t json_error;
@@ -163,15 +163,19 @@ int ls_game_create(ls_game** game_ptr, const char* path)
     // Allocate the game structure
     ls_game* game = calloc(1, sizeof(ls_game));
     if (!game) {
+
         error = 1;
         goto game_create_done;
     }
+
     // copy path to file
     game->path = strdup(path);
     if (!game->path) {
         error = 1;
         goto game_create_done;
+
     }
+
     // load json
     json = json_load_file(game->path, 0, &json_error);
     if (!json) {
@@ -187,17 +191,19 @@ int ls_game_create(ls_game** game_ptr, const char* path)
 
     if(ref) {
         printf("Detected generic format: %s\n", strdup(json_string_value(ref)));
-        if(!ff_load_splitsio_game(game, json)) {
-            error = 1;
+        error = ff_load_splitsio_game(game, json);
+        if(error != NONE) {
+            return error;
         };
     } else {
-        if(!ff_load_urn_game(game, json)) {
-            error = 1;
+        error = ff_load_urn_game(game, json);
+        if(error != NONE) {
+            return error;
         };
     }
 
 game_create_done:
-    if (error != NONE) {
+    if (error == NONE) {
         *game_ptr = game;
     } else if (game) {
         ls_game_release(game);
@@ -371,6 +377,7 @@ int ls_timer_create(ls_timer** timer_ptr, ls_game* game)
     int error = 0;
     ls_timer* timer;
     // allocate timer
+
     timer = calloc(1, sizeof(ls_timer));
     if (!timer) {
         error = 1;
